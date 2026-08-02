@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Add `AdsManager.instance.keywords` — a settable `List<String>` sent with every ad request (banner, interstitial, rewarded, rewarded interstitial, app open) for better ad targeting. Set it via `init(keywords: ...)` or reassign it any time content changes.
+
 ## 0.0.2
 
 * Fix: `show()` on `InterstitialAdController`, `RewardedAdController`, `RewardedInterstitialAdController` and `AppOpenAdController` now resolves only after the ad has actually been dismissed (or failed to show), instead of right after the platform call to launch it was issued. Previously, `await controller.show(...)` could return while the ad was still on screen, so code that inspected state set inside `onUserEarnedReward` (or that expected the app to have "come back" from the ad) right after the `await` would see stale results.

@@ -68,6 +68,21 @@ void main() {
     });
   });
 
+  group('Ad controller keywordsResolver', () {
+    test('defaults to an empty list when not provided', () {
+      final interstitial = InterstitialAdController(() => 'test-unit-id');
+      expect(interstitial.keywordsResolver(), isEmpty);
+    });
+
+    test('uses the resolver passed at construction', () {
+      final interstitial = InterstitialAdController(
+        () => 'test-unit-id',
+        keywordsResolver: () => ['sports', 'basketball'],
+      );
+      expect(interstitial.keywordsResolver(), ['sports', 'basketball']);
+    });
+  });
+
   group('TestAdUnitIds', () {
     test('exposes non-empty ids for the current platform', () {
       final ids = TestAdUnitIds.current;

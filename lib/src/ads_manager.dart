@@ -47,18 +47,22 @@ class AdsManager {
       : interstitial = InterstitialAdController(
           () => AdsManager.instance.unitIds.interstitial,
           fullScreenAdVisibility: _fullScreenAdVisibility,
+          keywordsResolver: () => AdsManager.instance.keywords,
         ),
         rewarded = RewardedAdController(
           () => AdsManager.instance.unitIds.rewarded,
           fullScreenAdVisibility: _fullScreenAdVisibility,
+          keywordsResolver: () => AdsManager.instance.keywords,
         ),
         rewardedInterstitial = RewardedInterstitialAdController(
           () => AdsManager.instance.unitIds.rewardedInterstitial,
           fullScreenAdVisibility: _fullScreenAdVisibility,
+          keywordsResolver: () => AdsManager.instance.keywords,
         ),
         appOpen = AppOpenAdController(
           () => AdsManager.instance.unitIds.appOpen,
           fullScreenAdVisibility: _fullScreenAdVisibility,
+          keywordsResolver: () => AdsManager.instance.keywords,
         ) {
     countedInterstitial = CountedInterstitialController(interstitial);
   }
@@ -80,6 +84,16 @@ class AdsManager {
   /// GDPR/UK/US consent (UMP) handling. `init` uses this automatically
   /// unless you pass `requestConsent: false`.
   final ConsentManager consent = ConsentManager();
+
+  /// Keywords describing your app or its current content (e.g. `['sports',
+  /// 'basketball']`), sent with every ad request this package makes —
+  /// banners, interstitials, rewarded, rewarded interstitial and app open —
+  /// to help AdMob pick more relevant (and often better-paying) ads.
+  ///
+  /// Set this via `init(keywords: ...)` up front, or reassign it any time
+  /// (e.g. when the user navigates to different content); the next ad load
+  /// picks up the new value.
+  List<String> keywords = const [];
 
   /// Full-screen ad shown between content transitions.
   final InterstitialAdController interstitial;
@@ -134,11 +148,14 @@ class AdsManager {
   /// [testDeviceIds] registers this device as a test device with AdMob
   /// (find your device ID in the console log the first time you request a
   /// real ad on it) so you can safely test with real ad unit IDs too.
+  ///
+  /// [keywords] seeds [AdsManager.keywords] — see its docs for what it does.
   Future<void> init({
     required AdUnitIdSet adUnitIds,
     bool useTestAds = kDebugMode,
     bool requestConsent = true,
     List<String> testDeviceIds = const [],
+    List<String> keywords = const [],
     bool preloadInterstitial = true,
     bool preloadRewarded = false,
     bool preloadRewardedInterstitial = false,
@@ -147,6 +164,7 @@ class AdsManager {
   }) async {
     _configuredIds = adUnitIds;
     _useTestAds = useTestAds;
+    this.keywords = keywords;
 
     if (requestConsent) {
       await consent.requestConsent(testDeviceIds: testDeviceIds);

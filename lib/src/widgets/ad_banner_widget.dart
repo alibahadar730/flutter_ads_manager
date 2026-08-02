@@ -67,10 +67,11 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     final size = await _resolveAdSize();
     if (size == null || !mounted) return;
 
+    final keywords = AdsManager.instance.keywords;
     final ad = BannerAd(
       adUnitId: adUnitId,
       size: size,
-      request: const AdRequest(),
+      request: AdRequest(keywords: keywords.isEmpty ? null : keywords),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           if (!mounted) {

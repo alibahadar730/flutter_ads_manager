@@ -25,7 +25,15 @@ class AppOpenAdController with WidgetsBindingObserver {
   /// on top of a subsequently-shown full-screen ad Activity.
   final ValueNotifier<bool>? fullScreenAdVisibility;
 
-  AppOpenAdController(this.adUnitIdResolver, {this.fullScreenAdVisibility});
+  /// Keywords sent with every ad request from this controller. Set by
+  /// `AdsManager` to reflect `AdsManager.instance.keywords`.
+  final List<String> Function() keywordsResolver;
+
+  AppOpenAdController(
+    this.adUnitIdResolver, {
+    this.fullScreenAdVisibility,
+    List<String> Function()? keywordsResolver,
+  }) : keywordsResolver = keywordsResolver ?? (() => const <String>[]);
 
   static const Duration _maxCacheDuration = Duration(hours: 4);
 
@@ -47,9 +55,10 @@ class AppOpenAdController with WidgetsBindingObserver {
   Future<void> load() async {
     if (_isLoading || isReady) return;
     _isLoading = true;
+    final keywords = keywordsResolver();
     await AppOpenAd.load(
       adUnitId: adUnitIdResolver(),
-      request: const AdRequest(),
+      request: AdRequest(keywords: keywords.isEmpty ? null : keywords),
       adLoadCallback: AppOpenAdLoadCallback(
         onAdLoaded: (ad) {
           _isLoading = false;

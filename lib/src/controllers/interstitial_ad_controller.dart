@@ -23,8 +23,15 @@ class InterstitialAdController {
   /// on top of a subsequently-shown full-screen ad Activity.
   final ValueNotifier<bool>? fullScreenAdVisibility;
 
-  InterstitialAdController(this.adUnitIdResolver,
-      {this.fullScreenAdVisibility});
+  /// Keywords sent with every ad request from this controller. Set by
+  /// `AdsManager` to reflect `AdsManager.instance.keywords`.
+  final List<String> Function() keywordsResolver;
+
+  InterstitialAdController(
+    this.adUnitIdResolver, {
+    this.fullScreenAdVisibility,
+    List<String> Function()? keywordsResolver,
+  }) : keywordsResolver = keywordsResolver ?? (() => const <String>[]);
 
   InterstitialAd? _ad;
   bool _isLoading = false;
@@ -39,9 +46,10 @@ class InterstitialAdController {
   Future<void> load() async {
     if (_isLoading || _ad != null) return;
     _isLoading = true;
+    final keywords = keywordsResolver();
     await InterstitialAd.load(
       adUnitId: adUnitIdResolver(),
-      request: const AdRequest(),
+      request: AdRequest(keywords: keywords.isEmpty ? null : keywords),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _isLoading = false;

@@ -1,6 +1,6 @@
 name: flutter_ads_manager
 description: "Drop-in AdMob ads for Flutter: banner, adaptive/large/medium-rectangle banner, interstitial, counted interstitial, rewarded, rewarded interstitial and app open ads with built-in preloading, retry and GDPR/UMP consent — no per-app native ad code."
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/alibahadar730/flutter_ads_manager
 repository: https://github.com/alibahadar730/flutter_ads_manager
 topics:

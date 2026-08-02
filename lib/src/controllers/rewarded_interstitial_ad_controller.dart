@@ -23,10 +23,15 @@ class RewardedInterstitialAdController {
   /// on top of a subsequently-shown full-screen ad Activity.
   final ValueNotifier<bool>? fullScreenAdVisibility;
 
+  /// Keywords sent with every ad request from this controller. Set by
+  /// `AdsManager` to reflect `AdsManager.instance.keywords`.
+  final List<String> Function() keywordsResolver;
+
   RewardedInterstitialAdController(
     this.adUnitIdResolver, {
     this.fullScreenAdVisibility,
-  });
+    List<String> Function()? keywordsResolver,
+  }) : keywordsResolver = keywordsResolver ?? (() => const <String>[]);
 
   RewardedInterstitialAd? _ad;
   bool _isLoading = false;
@@ -41,9 +46,10 @@ class RewardedInterstitialAdController {
   Future<void> load() async {
     if (_isLoading || _ad != null) return;
     _isLoading = true;
+    final keywords = keywordsResolver();
     await RewardedInterstitialAd.load(
       adUnitId: adUnitIdResolver(),
-      request: const AdRequest(),
+      request: AdRequest(keywords: keywords.isEmpty ? null : keywords),
       rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _isLoading = false;
