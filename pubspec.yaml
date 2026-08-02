@@ -1,0 +1,36 @@
+name: flutter_ads_manager
+description: "Drop-in AdMob ads for Flutter: banner, adaptive/large/medium-rectangle banner, interstitial, counted interstitial, rewarded, rewarded interstitial and app open ads with built-in preloading, retry and GDPR/UMP consent — no per-app native ad code."
+version: 0.0.1
+homepage: https://github.com/alibahadar730/flutter_ads_manager
+repository: https://github.com/alibahadar730/flutter_ads_manager
+topics:
+  - ads
+  - admob
+  - monetization
+  - advertising
+  - consent
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_mobile_ads: ^9.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # To add assets to your package, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
