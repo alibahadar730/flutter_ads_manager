@@ -34,6 +34,7 @@ class AppOpenAdController with WidgetsBindingObserver {
   bool _isShowing = false;
   bool _autoShowEnabled = false;
   DateTime? _loadTime;
+  Completer<void>? _dismissCompleter;
 
   /// Whether a non-expired ad is loaded and ready to show.
   bool get isReady => _ad != null && _isAdFresh;
@@ -60,6 +61,7 @@ class AppOpenAdController with WidgetsBindingObserver {
               _ad = null;
               _isShowing = false;
               fullScreenAdVisibility?.value = false;
+              _completeDismiss();
               load();
             },
             onAdFailedToShowFullScreenContent: (ad, error) {
@@ -67,6 +69,7 @@ class AppOpenAdController with WidgetsBindingObserver {
               _ad = null;
               _isShowing = false;
               fullScreenAdVisibility?.value = false;
+              _completeDismiss();
               load();
             },
           );
@@ -78,16 +81,28 @@ class AppOpenAdController with WidgetsBindingObserver {
     );
   }
 
+  void _completeDismiss() {
+    final completer = _dismissCompleter;
+    _dismissCompleter = null;
+    if (completer != null && !completer.isCompleted) completer.complete();
+  }
+
   /// Shows the loaded app open ad, if any and not expired, and not already
-  /// showing one. Returns true if an ad was shown.
+  /// showing one. Returns true if an ad was shown — after it has been
+  /// dismissed (or failed to show), not merely after it was launched.
   Future<bool> show() async {
     if (_isShowing || !isReady) return false;
     _isShowing = true;
     fullScreenAdVisibility?.value = true;
+    final dismissCompleter = Completer<void>();
+    _dismissCompleter = dismissCompleter;
     // Let a frame render with the banner removed from the tree before the
     // full-screen ad's native Activity launches on top of it.
     await WidgetsBinding.instance.endOfFrame;
     await _ad!.show();
+    // `_ad.show()` only resolves once the platform call to launch the ad
+    // Activity returns — not once the user has actually finished with it.
+    await dismissCompleter.future;
     return true;
   }
 

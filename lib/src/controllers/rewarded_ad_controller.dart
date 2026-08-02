@@ -29,6 +29,7 @@ class RewardedAdController {
   bool _isLoading = false;
   int _retryAttempt = 0;
   Timer? _retryTimer;
+  Completer<void>? _dismissCompleter;
 
   /// Whether an ad is loaded and ready to show.
   bool get isReady => _ad != null;
@@ -50,12 +51,14 @@ class RewardedAdController {
               ad.dispose();
               _ad = null;
               fullScreenAdVisibility?.value = false;
+              _completeDismiss();
               load();
             },
             onAdFailedToShowFullScreenContent: (ad, error) {
               ad.dispose();
               _ad = null;
               fullScreenAdVisibility?.value = false;
+              _completeDismiss();
               load();
             },
           );
@@ -69,6 +72,12 @@ class RewardedAdController {
     );
   }
 
+  void _completeDismiss() {
+    final completer = _dismissCompleter;
+    _dismissCompleter = null;
+    if (completer != null && !completer.isCompleted) completer.complete();
+  }
+
   void _scheduleRetry() {
     _retryAttempt++;
     final seconds = math.min(_retryAttempt * 2, 60);
@@ -79,13 +88,16 @@ class RewardedAdController {
   /// Shows the loaded rewarded ad, if any.
   ///
   /// [onUserEarnedReward] is called if and only if the user should be
-  /// granted the reward (i.e. they watched the ad to completion).
+  /// granted the reward (i.e. they watched the ad to completion). It is
+  /// always called (if at all) before this method returns, so it's safe to
+  /// inspect whatever state it set as soon as `await show(...)` completes.
   ///
-  /// Returns true if an ad was shown. Automatically preloads the next ad
-  /// once this one is dismissed. If no ad is ready, returns false
-  /// immediately (nothing is shown, [onUserEarnedReward] is not called) —
-  /// call [load] earlier and check [isReady] if you need to guarantee
-  /// availability.
+  /// Returns true if an ad was shown — after it has been dismissed (or
+  /// failed to show), not merely after it was launched. Automatically
+  /// preloads the next ad once this one is dismissed. If no ad is ready,
+  /// returns false immediately (nothing is shown, [onUserEarnedReward] is
+  /// not called) — call [load] earlier and check [isReady] if you need to
+  /// guarantee availability.
   Future<bool> show({
     required void Function(AdWithoutView ad, RewardItem reward)
         onUserEarnedReward,
@@ -94,10 +106,18 @@ class RewardedAdController {
     if (ad == null) return false;
     _ad = null;
     fullScreenAdVisibility?.value = true;
+    final dismissCompleter = Completer<void>();
+    _dismissCompleter = dismissCompleter;
     // Let a frame render with the banner removed from the tree before the
     // full-screen ad's native Activity launches on top of it.
     await SchedulerBinding.instance.endOfFrame;
     await ad.show(onUserEarnedReward: onUserEarnedReward);
+    // `ad.show()` only resolves once the platform call to launch the ad
+    // Activity returns — not once the user has actually finished with it.
+    // Wait for the real dismissal (or failure) signal so callers can trust
+    // that `onUserEarnedReward` has already fired (or never will) by the
+    // time this method returns.
+    await dismissCompleter.future;
     return true;
   }
 
