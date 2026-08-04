@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Shorten the `pubspec.yaml` description to fit pub.dev's 60–180 character limit (was too long to be indexed properly by search engines).
+
 ## 0.0.3
 
 * Add `AdsManager.instance.keywords` — a settable `List<String>` sent with every ad request (banner, interstitial, rewarded, rewarded interstitial, app open) for better ad targeting. Set it via `init(keywords: ...)` or reassign it any time content changes.
