@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Add `BannerAdVariant.compactAdaptive` — full device-width banner using Google's compact "current orientation anchored" adaptive size (~50-90dp tall), as opposed to the existing `adaptive` variant which uses the taller "Large" anchored adaptive size (~90-100dp tall). Use `compactAdaptive` for an edge-to-edge footer banner that shouldn't take up much vertical space; use `adaptive` when you want the larger, more prominent size.
+
 ## 0.0.4
 
 * Shorten the `pubspec.yaml` description to fit pub.dev's 60–180 character limit (was too long to be indexed properly by search engines).

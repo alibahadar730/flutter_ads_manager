@@ -84,9 +84,10 @@ That's it — every ad type is now ready to use anywhere in your app.
 ### Banner
 
 ```dart
-const AdBannerWidget(variant: BannerAdVariant.adaptive)     // full-width, recommended
-const AdBannerWidget(variant: BannerAdVariant.standard)     // 320x50
-const AdBannerWidget(variant: BannerAdVariant.largeBanner)  // 320x100
+const AdBannerWidget(variant: BannerAdVariant.adaptive)        // full-width, ~90-100dp tall
+const AdBannerWidget(variant: BannerAdVariant.compactAdaptive) // full-width, ~50-90dp tall
+const AdBannerWidget(variant: BannerAdVariant.standard)        // 320x50
+const AdBannerWidget(variant: BannerAdVariant.largeBanner)     // 320x100
 const AdBannerWidget(variant: BannerAdVariant.mediumRectangle) // 300x250
 ```
 

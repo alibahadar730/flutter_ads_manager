@@ -16,8 +16,17 @@ enum BannerAdVariant {
   mediumRectangle,
 
   /// Full-width banner whose height is chosen by Google for the device and
-  /// current orientation. Recommended by Google over fixed sizes.
+  /// current orientation, using the *Large* anchored adaptive size
+  /// (typically ~90-100dp tall). Recommended by Google over fixed sizes
+  /// when you want a taller, more prominent banner.
   adaptive,
+
+  /// Full-width banner using Google's *compact* "current orientation
+  /// anchored" adaptive size (typically ~50-90dp tall, close to
+  /// [standard]'s height) — full device width like [adaptive], but without
+  /// the extra height [adaptive] reserves. The usual choice for an
+  /// edge-to-edge footer banner that shouldn't dominate the screen.
+  compactAdaptive,
 }
 
 /// A ready-to-drop-in banner ad widget.
@@ -99,6 +108,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
         return unitIds.mediumRectangleOrBanner;
       case BannerAdVariant.standard:
       case BannerAdVariant.adaptive:
+      case BannerAdVariant.compactAdaptive:
         return unitIds.banner;
     }
   }
@@ -114,6 +124,11 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
       case BannerAdVariant.adaptive:
         final width = MediaQuery.sizeOf(context).width.truncate();
         return AdSize.getLargeAnchoredAdaptiveBannerAdSize(width);
+      case BannerAdVariant.compactAdaptive:
+        final width = MediaQuery.sizeOf(context).width.truncate();
+        // ignore: deprecated_member_use
+        final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
+        return (size == null || size.width > width) ? AdSize.banner : size;
     }
   }
 
