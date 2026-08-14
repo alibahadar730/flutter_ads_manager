@@ -1,3 +1,8 @@
+## 0.0.7
+
+* Upgrade `google_mobile_ads` to `^9.1.0`.
+* Fix a `deprecated_member_use` static analysis warning on `compactAdaptive` banners (no behavior change — the underlying Google API this relies on is deprecated in favor of a taller size with no compact replacement, so the call is kept but properly isolated/suppressed instead of leaking into your app's own analysis).
+
 ## 0.0.6
 
 * Fix: the device screen could time out and sleep while a full-screen ad was still loading (loading the ad SDK's WebView can take a few seconds), dismissing the ad before the user ever saw it. `AdsManager` now keeps the screen awake (via `wakelock_plus`, no extra permissions or native setup needed) from the moment a full-screen ad is triggered until it's dismissed.

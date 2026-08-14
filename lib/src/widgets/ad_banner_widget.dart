@@ -126,12 +126,18 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
         return AdSize.getLargeAnchoredAdaptiveBannerAdSize(width);
       case BannerAdVariant.compactAdaptive:
         final width = MediaQuery.sizeOf(context).width.truncate();
-        // ignore: deprecated_member_use
-        final size =
-            await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                width);
+        final size = await _compactAdaptiveSize(width);
         return (size == null || size.width > width) ? AdSize.banner : size;
     }
+  }
+
+  // google_mobile_ads only exposes the compact "current orientation
+  // anchored" adaptive size through a deprecated API (it steers everyone
+  // towards the taller "large" size instead) — isolated here so the
+  // suppression only covers this one call.
+  Future<AdSize?> _compactAdaptiveSize(int width) async {
+    // ignore: deprecated_member_use
+    return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
   }
 
   @override
