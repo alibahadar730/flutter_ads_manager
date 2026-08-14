@@ -127,7 +127,9 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
       case BannerAdVariant.compactAdaptive:
         final width = MediaQuery.sizeOf(context).width.truncate();
         // ignore: deprecated_member_use
-        final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
+        final size =
+            await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                width);
         return (size == null || size.width > width) ? AdSize.banner : size;
     }
   }

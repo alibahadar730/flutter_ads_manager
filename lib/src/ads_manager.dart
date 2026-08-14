@@ -2,6 +2,7 @@ import 'dart:async' show unawaited;
 
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'config/ad_unit_ids.dart';
 import 'config/test_ad_unit_ids.dart';
@@ -65,6 +66,18 @@ class AdsManager {
           keywordsResolver: () => AdsManager.instance.keywords,
         ) {
     countedInterstitial = CountedInterstitialController(interstitial);
+    // Prevents the screen from sleeping between the moment a full-screen ad
+    // is triggered and the moment its Activity actually appears (loading
+    // the ad SDK's WebView can take a few seconds), and for as long as the
+    // ad stays on screen — otherwise, on an idle device, the screen can
+    // time out before the ad ever shows.
+    _fullScreenAdVisibility.addListener(() {
+      unawaited(
+        _fullScreenAdVisibility.value
+            ? WakelockPlus.enable()
+            : WakelockPlus.disable(),
+      );
+    });
   }
 
   /// The shared [AdsManager] instance.

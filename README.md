@@ -189,6 +189,14 @@ class MainActivity : FlutterActivity() {
 }
 ```
 
+## Screen stays awake during ads
+
+Loading a full-screen ad's SDK (its WebView) can take a few seconds. On an
+idle device, that's sometimes long enough for the screen to time out and
+sleep before the ad ever appears. `AdsManager` keeps the screen awake from
+the moment a full-screen ad is triggered until it's dismissed, so this
+never happens — no setup required, no extra permissions on Android or iOS.
+
 ## API surface
 
 | Type | Purpose |

@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Fix: the device screen could time out and sleep while a full-screen ad was still loading (loading the ad SDK's WebView can take a few seconds), dismissing the ad before the user ever saw it. `AdsManager` now keeps the screen awake (via `wakelock_plus`, no extra permissions or native setup needed) from the moment a full-screen ad is triggered until it's dismissed.
+
 ## 0.0.5
 
 * Add `BannerAdVariant.compactAdaptive` — full device-width banner using Google's compact "current orientation anchored" adaptive size (~50-90dp tall), as opposed to the existing `adaptive` variant which uses the taller "Large" anchored adaptive size (~90-100dp tall). Use `compactAdaptive` for an edge-to-edge footer banner that shouldn't take up much vertical space; use `adaptive` when you want the larger, more prominent size.
