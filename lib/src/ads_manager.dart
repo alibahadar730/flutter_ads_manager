@@ -1,4 +1,4 @@
-import 'dart:async' show unawaited;
+import 'dart:async' show Completer, unawaited;
 
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -198,6 +198,27 @@ class AdsManager {
     if (preloadRewardedInterstitial) unawaited(rewardedInterstitial.load());
     if (preloadAppOpen) unawaited(appOpen.load());
     if (showAppOpenOnResume) appOpen.enableShowOnAppResume();
+  }
+
+  /// Opens Google's Ad Inspector for on-device debugging of ad requests
+  /// and mediation. Intended for developer/QA use only — gate this
+  /// behind a debug-only or hidden entry point in your app, never
+  /// expose it to ordinary users.
+  ///
+  /// Returns `null` on success, or an error message if it failed to
+  /// open. (`google_mobile_ads` doesn't export the `AdInspectorError`
+  /// type its own `openAdInspector` callback uses, so this package
+  /// absorbs that oddity for you and only surfaces the error's message.)
+  Future<String?> openAdInspector() {
+    final completer = Completer<String?>();
+    try {
+      MobileAds.instance.openAdInspector((error) {
+        if (!completer.isCompleted) completer.complete(error?.message);
+      });
+    } catch (e) {
+      if (!completer.isCompleted) completer.complete(e.toString());
+    }
+    return completer.future;
   }
 
   /// Releases every cached ad and stops app-open lifecycle observation.

@@ -1,3 +1,7 @@
+## 0.0.8
+
+* Add `AdsManager.instance.openAdInspector()` — opens Google's on-device Ad Inspector for debugging ad requests/mediation, without your app needing to depend on `google_mobile_ads` directly (its own `openAdInspector` API references a type, `AdInspectorError`, that package doesn't actually export). Returns `null` on success or an error message string on failure.
+
 ## 0.0.7
 
 * Upgrade `google_mobile_ads` to `^9.1.0`.
